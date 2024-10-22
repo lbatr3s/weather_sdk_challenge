@@ -97,6 +97,8 @@ public class WeatherForecastViewController: UIViewController {
         let backButton = UIBarButtonItem(title: "Back", image: UIImage(systemName: "chevron.left"), target: self, action: #selector(didTapBackButton))
         navigationItem.leftBarButtonItem = backButton
         
+        title = "24H Forecast"
+        
         output.viewIsReady()
     }
     
