@@ -41,6 +41,10 @@ extension WeatherForecastPresenter: WeatherForecastViewOutput {
     func didTapBackButton() {
         delegate?.onFinished(controller: view as! WeatherForecastViewController)
     }
+    
+    func startRefreshing() {
+        interactor.retrieveCurrentWeather(city: cityName)
+    }
 }
 
 // MARK: WeatherForecastInteractorOutput methods
@@ -68,11 +72,13 @@ extension WeatherForecastPresenter: WeatherForecastInteractorOutput {
                                           description: weatherData.weather.description)
         }))
         
+        view.endRefreshing()
         view.hideLoading()
     }
     
     func didFailRetrievingCurrentWeatherData(message: String) {
         view.hideLoading()
+        view.endRefreshing()
         delegate?.onFinishedWithError(message, controller: view as! WeatherForecastViewController)
     }
 }

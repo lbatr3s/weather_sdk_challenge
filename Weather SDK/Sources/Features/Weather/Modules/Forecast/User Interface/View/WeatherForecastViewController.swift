@@ -14,6 +14,7 @@ protocol WeatherForecastViewInput: AnyObject, LoadingViewPresentable {
     func updateScreenWithHourlyData(data: [HourlyWeatherViewModel])
     func showLoading()
     func hideLoading()
+    func endRefreshing()
     func moduleInput() -> WeatherForecastModuleInput
 }
 
@@ -21,6 +22,7 @@ protocol WeatherForecastViewOutput {
     
     func viewIsReady()
     func didTapBackButton()
+    func startRefreshing()
 }
 
 public class WeatherForecastViewController: UIViewController {
@@ -33,6 +35,7 @@ public class WeatherForecastViewController: UIViewController {
             tableView.dataSource = self
             tableView.estimatedRowHeight = 60
             tableView.rowHeight = UITableView.automaticDimension
+            tableView.refreshControl = refreshControl
         }
     }
     
@@ -78,6 +81,12 @@ public class WeatherForecastViewController: UIViewController {
         }
     }
     
+    private lazy var refreshControl: UIRefreshControl = {
+        let control = UIRefreshControl()
+        control.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+        return control
+    }()
+    
     static let identifier = "WeatherForecastViewController"
     
     var output: WeatherForecastViewOutput!
@@ -93,6 +102,10 @@ public class WeatherForecastViewController: UIViewController {
     
     @objc private func didTapBackButton() {
         output.didTapBackButton()
+    }
+    
+    @objc private func didPullToRefresh() {
+        output.startRefreshing()
     }
 }
 
@@ -131,6 +144,10 @@ extension WeatherForecastViewController: WeatherForecastViewInput {
     
     func updateScreenWithHourlyData(data: [HourlyWeatherViewModel]) {
         hourlyData = data
+    }
+    
+    func endRefreshing() {
+        refreshControl.endRefreshing()
     }
     
     func moduleInput() -> WeatherForecastModuleInput {
